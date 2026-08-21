@@ -86,16 +86,17 @@ namespace EjustLostAndFoundHub.Controllers
             bool isDuplicate = false;
             DateTime timeThreshold = DateTime.UtcNow.AddHours(-24);
 
-            // 2. Check for duplicates based on category and relevant fields
+            // 2. Check for duplicates based on category, relevant fields and status
             if (!string.IsNullOrEmpty(form.Category))
             {
                 switch (form.Category.ToLower())
                 {
                     case "id":
                         // Check for duplicates
-                        isDuplicate = await _context.IdItems.AnyAsync(i => 
+                        isDuplicate = await _context.IdItems.AnyAsync(i =>
                         i.DateReported >= timeThreshold &&
-                        i.IdNumber == form.IdNumber.Trim());
+                        i.IdNumber == form.IdNumber.Trim() &&
+                        i.Status == "Active");
                         // Create a new ID item to be added to the database
                         newDbItem = new IdItem
                         {
@@ -116,7 +117,8 @@ namespace EjustLostAndFoundHub.Controllers
                             i.DeviceBrand.ToLower() == form.DeviceBrand.Trim().ToLower() &&
                             i.DeviceModel.ToLower() == form.DeviceModel.Trim().ToLower() &&
                             i.LocationFound.ToLower() == form.LocationFound.Trim().ToLower() &&
-                            i.DeviceDescription.ToLower() == form.DeviceDescription.Trim().ToLower() );
+                            i.DeviceDescription.ToLower() == form.DeviceDescription.Trim().ToLower() &&
+                            i.Status == "Active");
                         // Create a new Device item to be added to the database
                         newDbItem = new DeviceItem
                         {
@@ -136,7 +138,8 @@ namespace EjustLostAndFoundHub.Controllers
                         isDuplicate = await _context.WalletItems.AnyAsync(i =>
                             i.DateReported >= timeThreshold &&
                             i.WalletColor.ToLower() == form.WalletColor.Trim().ToLower() &&
-                            i.LocationFound.ToLower() == form.LocationFound.Trim().ToLower());
+                            i.LocationFound.ToLower() == form.LocationFound.Trim().ToLower() &&
+                            i.Status == "Active");
                         // Create a new Wallet item to be added to the database
                         newDbItem = new WalletItem
                         {
@@ -155,7 +158,8 @@ namespace EjustLostAndFoundHub.Controllers
                         isDuplicate = await _context.JewelryItems.AnyAsync(i =>
                             i.DateReported >= timeThreshold &&
                             i.JewelryType.ToLower() == form.JewelryType.Trim().ToLower() &&
-                            i.LocationFound.ToLower() == form.LocationFound.Trim().ToLower());
+                            i.LocationFound.ToLower() == form.LocationFound.Trim().ToLower() &&
+                            i.Status == "Active");
                         // Create a new Jewelry item to be added to the database
                         newDbItem = new JewelryItem
                         {
@@ -174,7 +178,8 @@ namespace EjustLostAndFoundHub.Controllers
                         isDuplicate = await _context.NotebookItems.AnyAsync(i =>
                             i.DateReported >= timeThreshold &&
                             i.NotebookColor.ToLower() == form.NotebookColor.Trim().ToLower() &&
-                            i.LocationFound.ToLower() == form.LocationFound.Trim().ToLower());
+                            i.LocationFound.ToLower() == form.LocationFound.Trim().ToLower() &&
+                            i.Status == "Active");
                         // Create a new Notebook item to be added to the database
                         newDbItem = new NotebookItem
                         {
