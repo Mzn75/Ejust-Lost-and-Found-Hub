@@ -19,11 +19,14 @@ namespace EjustLostAndFoundHub.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IDataProtector _protector;
 
+        private readonly IWebHostEnvironment _env;
+
         // Constructor to initialize the controller with the database context and data protection provider
-        public ItemsController(ApplicationDbContext context, IDataProtectionProvider provider)
+        public ItemsController(ApplicationDbContext context, IDataProtectionProvider provider, IWebHostEnvironment env)
         {
             _context = context;
             _protector = provider.CreateProtector("ReportedItemsCookieLock");
+            _env = env;
         }
 
         // Get found items from the database, filter by category, and display them in the view
@@ -221,7 +224,7 @@ namespace EjustLostAndFoundHub.Controllers
 
                 // Generate a unique filename to prevent overwriting and save the file
                 var uniqueFileName = Guid.NewGuid().ToString() + extension;
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
                 Directory.CreateDirectory(uploadsFolder);
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
