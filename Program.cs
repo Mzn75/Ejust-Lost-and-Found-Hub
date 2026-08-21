@@ -46,6 +46,7 @@ app.UseAuthorization();
 
 // Optimize and serve static files (like CSS, JS, images) from the wwwroot folder
 app.MapStaticAssets();
+app.UseStaticFiles();
 
 // Define the default route for MVC controllers, specifying the default controller and action
 app.MapControllerRoute(
