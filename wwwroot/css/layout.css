@@ -122,3 +122,9 @@
             color: white;
             transform: translateX(5px);
         }
+
+
+.dev-by {
+    color: var(--accent);
+    text-decoration: none;
+}

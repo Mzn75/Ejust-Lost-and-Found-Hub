@@ -771,8 +771,3 @@ select.search-input {
         background: rgba(181, 86, 60, 0.18) !important;
         box-shadow: 0 0 0 3px rgba(181, 86, 60, 0.25) !important;
     }
-
-a {
-    color: var(--accent);
-    text-decoration: none;
-}
