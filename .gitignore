@@ -368,3 +368,5 @@ FodyWeavers.xsd
 # Ignore user-uploaded lost item photos
 wwwroot/uploads/*
 !wwwroot/uploads/.keep
+
+appsettings.Production.json
