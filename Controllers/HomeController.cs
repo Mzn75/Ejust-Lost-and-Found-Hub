@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
 using EjustLostAndFoundHub.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace EjustLostAndFoundHub.Controllers
@@ -7,6 +8,7 @@ namespace EjustLostAndFoundHub.Controllers
     public class HomeController : Controller
     {
         // View for the home page
+        [Authorize]
         public IActionResult Index()
         {
             return View();

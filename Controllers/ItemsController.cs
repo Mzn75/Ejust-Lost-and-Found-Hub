@@ -1,5 +1,6 @@
 ﻿using EjustLostAndFoundHub.Data;
 using EjustLostAndFoundHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,7 @@ namespace EjustLostAndFoundHub.Controllers
 
         // Get found items from the database, filter by category, and display them in the view
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> FoundItems(string filter = "recent")
         {
             // 1. Setup Ownership Cookies
@@ -215,10 +217,10 @@ namespace EjustLostAndFoundHub.Controllers
                 // Get the file extension and convert to lower case for comparison
                 var extension = Path.GetExtension(form.ItemPhoto.FileName).ToLower();
                 // Validate the file extension and size
-                if (!allowedExtensions.Contains(extension) || form.ItemPhoto.Length > 5 * 1024 * 1024)
+                if (!allowedExtensions.Contains(extension) || form.ItemPhoto.Length > 15 * 1024 * 1024)
                 {
                     // Return with an error message if the file is not valid
-                    ModelState.AddModelError("ItemPhoto", "Please upload a valid image (JPG/PNG) under 5MB.");
+                    ModelState.AddModelError("ItemPhoto", "Please upload a valid image (JPG/PNG) under 15MB.");
                     return View("FoundItems", form);
                 }
 
@@ -335,6 +337,7 @@ namespace EjustLostAndFoundHub.Controllers
 
         // Display the LostItems view
         [HttpGet]
+        [Authorize]
         public IActionResult LostItems()
         {
             return View();
@@ -375,6 +378,7 @@ namespace EjustLostAndFoundHub.Controllers
 
         // Display the details of a specific item, masking sensitive information for privacy
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Details(Guid id)
         {
             // 1. Fetch the item from the database using the public ID
@@ -391,6 +395,66 @@ namespace EjustLostAndFoundHub.Controllers
 
             // 4. Return the item details view with the masked information
             return View(item);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> MManage(int page = 1)
+        {
+            int pageSize = 10;
+
+            var query = _context.Items.OrderByDescending(i => i.Id);
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            return View(items);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // 1. Find the item in the database
+            var item = await _context.Items.FindAsync(id);
+
+            // 2. If someone tries to delete an ID that doesn't exist, return a 404
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            if (!string.IsNullOrEmpty(item.PhotoPath))
+            {
+                // 1. Remove the leading slash (e.g., "/uploads/file.jpg" becomes "uploads/file.jpg")
+                string relativePath = item.PhotoPath.TrimStart('/');
+
+                // 2. Build the exact physical path on the server
+                string physicalFilePath = Path.Combine(_env.WebRootPath, relativePath);
+
+                // 3. Check if the file actually exists on the drive, then delete it
+                if (System.IO.File.Exists(physicalFilePath))
+                {
+                    System.IO.File.Delete(physicalFilePath);
+                }
+            }
+
+            // 3. Mark the item for deletion
+            _context.Items.Remove(item);
+
+            // 4. Execute the deletion query in SQL Server
+            await _context.SaveChangesAsync();
+
+            // 5. Redirect back to the paginated master list
+            return RedirectToAction("Manage");
         }
     }
 }

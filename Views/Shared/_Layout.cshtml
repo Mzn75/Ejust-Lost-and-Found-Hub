@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="~/css/responsive.css" asp-append-version="true" />
 </head>
 
-<body class="@(ViewData["LockScroll"] != null && (bool)ViewData["LockScroll"] ? "lock-scroll" : "")">
+<body class="@(ViewData["LockScroll"] != null && (bool)ViewData["LockScroll"] ? "lock-scroll" : "")" style="overflow:hidden">
 
     <!-- Sidebar Navigation -->
     <nav class="sidebar">
@@ -53,6 +53,15 @@
                     Dashboard
                 </a>
             </li>
+            @if (User.IsInRole("Admin"))
+            {
+                <li>
+                    <a asp-controller="Items" asp-action="Manage">
+                        <i class="fas fa-pencil me-2"></i>
+                        Manage Items
+                    </a>
+                </li>
+            }
             <li>
                 <a asp-controller="Items" asp-action="LostItems">
                     <i class="fas fa-search me-2"></i>

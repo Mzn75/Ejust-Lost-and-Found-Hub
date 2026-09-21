@@ -773,17 +773,43 @@ select.search-input {
     }
 
 /* ==========================================================================
-   For Log In Page
+   CUSTOM PAGINATION STYLES
    ========================================================================== */
-.login-wrapper {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
+
+/* 1. Default state for the page numbers */
+.pagination .page-link {
+    color: var(--primary, #27ae60); /* Green text by default */
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    margin: 0 3px; /* Adds a tiny gap between buttons */
+    border-radius: 8px; /* Matches your element-card corners */
+    transition: all 0.3s ease;
+    font-weight: 600;
 }
-.login-bounds {
-    width: 100%;
-    max-width: 600px;
+
+    /* 2. Hover effect */
+    .pagination .page-link:hover {
+        color: white;
+        background-color: var(--primary, #27ae60);
+        border-color: var(--primary, #27ae60);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(39, 174, 96, 0.2);
+    }
+
+/* 3. The Active/Selected page */
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--secondary, #2ecc71), var(--primary, #27ae60));
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+}
+
+/* 4. Disabled state (Previous/Next buttons at the ends) */
+.pagination .page-item.disabled .page-link {
+    color: #a0a5aa;
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    pointer-events: none;
+    transform: none;
+    box-shadow: none;
 }
