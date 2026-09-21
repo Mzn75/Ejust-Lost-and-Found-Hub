@@ -399,7 +399,7 @@ namespace EjustLostAndFoundHub.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> MManage(int page = 1)
+        public async Task<IActionResult> Manage(int page = 1)
         {
             int pageSize = 10;
 
@@ -454,6 +454,79 @@ namespace EjustLostAndFoundHub.Controllers
             await _context.SaveChangesAsync();
 
             // 5. Redirect back to the paginated master list
+            return RedirectToAction("Manage");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            // Find the item in the database
+            var item = await _context.Items.FindAsync(id);
+
+            // If the database can't find it, it throws the 404
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            // Loads the Views/Items/UpdateItem.cshtml file
+            return View(item);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, IFormCollection form)
+        {
+            // 1. Fetch the existing item from the database
+            var item = await _context.Items.FindAsync(id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            // 2. Update the base properties shared by all items
+            item.LocationFound = form["LocationFound"];
+            item.Status = form["Status"];
+            item.ContactNumber = form["ContactNumber"];
+            item.ContactEmail = form["ContactEmail"];
+
+            // 3. Update specific properties based on the exact item type
+            switch (item)
+            {
+                case IdItem idCard:
+                    idCard.IdNumber = form["IdNumber"];
+                    idCard.IdName = form["IdName"];
+                    break;
+
+                case DeviceItem device:
+                    device.DeviceBrand = form["DeviceBrand"];
+                    device.DeviceModel = form["DeviceModel"];
+                    device.DeviceDescription = form["DeviceDescription"];
+                    break;
+
+                case WalletItem wallet:
+                    wallet.WalletColor = form["WalletColor"];
+                    wallet.WalletBrandOrMaterial = form["WalletBrandOrMaterial"];
+                    break;
+
+                case JewelryItem jewelry:
+                    jewelry.JewelryMaterial = form["JewelryMaterial"];
+                    jewelry.JewelryType = form["JewelryType"];
+                    break;
+
+                case NotebookItem notebook:
+                    notebook.NotebookColor = form["NotebookColor"];
+                    break;
+            }
+
+            // 4. Tell EF Core the entity was modified and save
+            _context.Update(item);
+            await _context.SaveChangesAsync();
+
+            // 5. Send the Admin back to the master list
             return RedirectToAction("Manage");
         }
     }

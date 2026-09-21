@@ -1,0 +1,164 @@
+﻿@model EjustLostAndFoundHub.Models.ItemModel
+@{
+    ViewData["Title"] = "Edit Item";
+}
+
+<button class="mobile-menu-btn d-lg-none">
+    <i class="fas fa-bars"></i>
+</button>
+
+<div class="glass-container overflow-auto vh-100 pb-5">
+    <main class="main-content">
+
+        <div class="content-header welcome-header-card bg-white rounded shadow-sm p-5 text-center position-relative mb-4">
+            <i class="fa-solid fa-pen-to-square faded-watermark-icon"></i>
+            <h2>Edit Item #@Model.Id</h2>
+            <p>Modify the details for this reported item.</p>
+        </div>
+
+        <form asp-action="Edit" method="post">
+            <!-- Hidden ID so the backend knows which item to update -->
+            <input type="hidden" asp-for="Id" />
+
+            <div class="element-card p-4 p-md-5">
+                <div class="row">
+
+                    <!-- Left Side: Image Display (Now fills the column properly) -->
+                    <div class="col-md-5 mb-4 mb-md-0 d-flex flex-column">
+                        <div class="item-thumbnail w-100 shadow-sm flex-grow-1 d-flex align-items-center justify-content-center bg-light" style="border-radius: 15px; overflow: hidden; min-height: 350px;">
+                            @if (!string.IsNullOrEmpty(Model.PhotoPath))
+                            {
+                                <img src="@Model.PhotoPath" alt="Item" class="w-100 h-100" style="object-fit: cover; min-height: 350px;" />
+                            }
+                            else
+                            {
+                                string iconClass = Model switch
+                                {
+                                    EjustLostAndFoundHub.Models.IdItem => "fa-id-card",
+                                    EjustLostAndFoundHub.Models.WalletItem => "fa-wallet",
+                                    EjustLostAndFoundHub.Models.DeviceItem => "fa-mobile-screen",
+                                    EjustLostAndFoundHub.Models.JewelryItem => "fa-ring",
+                                    EjustLostAndFoundHub.Models.NotebookItem => "fa-book",
+                                    _ => "fa-box"
+                                };
+
+                                <i class="fa-solid @iconClass fa-5x text-secondary"></i>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Edit Form Fields -->
+                    <div class="col-md-7 ps-md-4">
+
+                        <h4 class="mb-3 border-bottom pb-2">General Details</h4>
+
+                        <!-- NEW: Status and Contact Info Side-by-Side -->
+                        <div class="row">
+                            <div class="col-sm-6 form-group mb-4">
+                                <label class="fw-bold mb-2">Status</label>
+                                <select name="Status" class="form-select bg-light border-0 p-3" style="height: 54px;">
+                                    <!-- The razor code selects the correct option from the database automatically -->
+                                    <option value="Found" selected="@(Model.Status == "Found" ? "selected" : null)">Active</option>
+                                    <option value="Returned" selected="@(Model.Status == "Returned" ? "selected" : null)">Returned</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-6 form-group mb-4">
+                                <label class="fw-bold mb-2">Contact Info</label>
+                                @if (string.IsNullOrEmpty(Model.ContactEmail))
+                                {
+                                    <input type="text" name="ContactNumber" value="@Model.ContactNumber" class="form-control bg-light border-0 p-3" placeholder="Phone" />
+                                }
+                                else
+                                {
+                                    <input type="text" name="ContactEmail" value="@Model.ContactEmail" class="form-control bg-light border-0 p-3" placeholder="Email" />
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="fw-bold mb-2">Location Found / Lost</label>
+                            <input type="text" name="LocationFound" value="@Model.LocationFound" class="form-control bg-light border-0 p-3" />
+                        </div>
+
+                        <h4 class="mb-3 mt-4 border-bottom pb-2">Specific Details</h4>
+
+                        <!-- Dynamic Fields generated based on Item Type -->
+                        @switch (Model)
+                        {
+                            case EjustLostAndFoundHub.Models.IdItem idCard:
+                                <div class="row">
+                                    <div class="col-6 form-group mb-3">
+                                        <label class="fw-bold mb-2">ID Number</label>
+                                        <input type="text" name="IdNumber" value="@idCard.IdNumber" class="form-control bg-light border-0 p-3" />
+                                    </div>
+                                    <div class="col-6 form-group mb-3">
+                                        <label class="fw-bold mb-2">Name on ID</label>
+                                        <input type="text" name="IdName" value="@idCard.IdName" class="form-control bg-light border-0 p-3" />
+                                    </div>
+                                </div>
+                                break;
+
+                            case EjustLostAndFoundHub.Models.DeviceItem device:
+                                <div class="row">
+                                    <div class="col-6 form-group mb-3">
+                                        <label class="fw-bold mb-2">Brand</label>
+                                        <input type="text" name="DeviceBrand" value="@device.DeviceBrand" class="form-control bg-light border-0 p-3" />
+                                    </div>
+                                    <div class="col-6 form-group mb-3">
+                                        <label class="fw-bold mb-2">Model</label>
+                                        <input type="text" name="DeviceModel" value="@device.DeviceModel" class="form-control bg-light border-0 p-3" />
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="fw-bold mb-2">Description</label>
+                                    <textarea name="DeviceDescription" class="form-control bg-light border-0 p-3" rows="3">@device.DeviceDescription</textarea>
+                                </div>
+                                break;
+
+                            case EjustLostAndFoundHub.Models.WalletItem wallet:
+                                <div class="form-group mb-3">
+                                    <label class="fw-bold mb-2">Wallet Color</label>
+                                    <input type="text" name="WalletColor" value="@wallet.WalletColor" class="form-control bg-light border-0 p-3" />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="fw-bold mb-2">Brand / Material</label>
+                                    <input type="text" name="WalletBrandOrMaterial" value="@wallet.WalletBrandOrMaterial" class="form-control bg-light border-0 p-3" />
+                                </div>
+                                break;
+
+                            case EjustLostAndFoundHub.Models.JewelryItem jewelry:
+                                <div class="form-group mb-3">
+                                    <label class="fw-bold mb-2">Material</label>
+                                    <input type="text" name="JewelryMaterial" value="@jewelry.JewelryMaterial" class="form-control bg-light border-0 p-3" />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="fw-bold mb-2">Type</label>
+                                    <input type="text" name="JewelryType" value="@jewelry.JewelryType" class="form-control bg-light border-0 p-3" />
+                                </div>
+                                break;
+
+                            case EjustLostAndFoundHub.Models.NotebookItem notebook:
+                                <div class="form-group mb-3">
+                                    <label class="fw-bold mb-2">Notebook Color</label>
+                                    <input type="text" name="NotebookColor" value="@notebook.NotebookColor" class="form-control bg-light border-0 p-3" />
+                                </div>
+                                break;
+                        }
+
+                        <div class="card-actions mt-5 d-flex gap-3">
+                            <a asp-action="Manage" class="btn-outline w-50 py-3 rounded text-center" style="text-decoration: none;">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn-primary w-50 border-0 py-3 rounded text-center">
+                                <i class="fas fa-save me-2"></i> Save Changes
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </main>
+</div>
