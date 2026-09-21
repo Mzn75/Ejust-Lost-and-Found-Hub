@@ -771,3 +771,19 @@ select.search-input {
         background: rgba(181, 86, 60, 0.18) !important;
         box-shadow: 0 0 0 3px rgba(181, 86, 60, 0.25) !important;
     }
+
+/* ==========================================================================
+   For Log In Page
+   ========================================================================== */
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+.login-bounds {
+    width: 100%;
+    max-width: 600px;
+}
