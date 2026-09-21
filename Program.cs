@@ -1,13 +1,21 @@
+using EjustLostAndFoundHub.Data;
+using EjustLostAndFoundHub.Models;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
-using Microsoft.AspNetCore.DataProtection;
-using EjustLostAndFoundHub.Data;
 
 // Intialize the web application builder with default configurations and services
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure Entity Framework to use SQL Server with the connection string from configuration
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Identity configuration
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 
 // Add services to the container for MVC Architecture

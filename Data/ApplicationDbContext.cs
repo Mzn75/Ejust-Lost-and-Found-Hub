@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using EjustLostAndFoundHub.Models;
 
 namespace EjustLostAndFoundHub.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         // Constructor to initialize the DbContext with options
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
