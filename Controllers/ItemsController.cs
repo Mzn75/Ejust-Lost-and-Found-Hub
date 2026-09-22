@@ -22,10 +22,10 @@ namespace EjustLostAndFoundHub.Controllers
         private readonly IDataProtector _protector;
 
         private readonly IWebHostEnvironment _env;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         // Constructor to initialize the controller with the database context and data protection provider
-        public ItemsController(ApplicationDbContext context, IWebHostEnvironment env, UserManager<IdentityUser> userManager)
+        public ItemsController(ApplicationDbContext context, IWebHostEnvironment env, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _env = env;
