@@ -167,9 +167,6 @@
 </div>
 
 @section Scripts {
-    <!-- Include SweetAlert2 library (if not already in your _Layout.cshtml) -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             
@@ -181,7 +178,6 @@
                     // Stop the form from submitting immediately
                     e.preventDefault();
                     
-                    // Fire the SweetAlert popup
                     Swal.fire({
                         title: 'Delete Item?',
                         text: 'Are you sure you want to completely delete this item? This cannot be undone.',
@@ -190,7 +186,6 @@
                         confirmButtonText: 'Yes, delete it',
                         cancelButtonText: 'Cancel',
                         
-                        // Apply the custom glass classes from your components.css
                         customClass: {
                             popup: 'swal-glass-popup',
                             title: 'swal-glass-title',
@@ -198,9 +193,8 @@
                             confirmButton: 'swal-glass-confirm',
                             cancelButton: 'swal-glass-cancel'
                         },
-                        buttonsStyling: false // Disables default SweetAlert button styles
+                        buttonsStyling: false
                     }).then((result) => {
-                        // If the user clicks "Yes, delete it"
                         if (result.isConfirmed) {
                             form.submit(); 
                         }

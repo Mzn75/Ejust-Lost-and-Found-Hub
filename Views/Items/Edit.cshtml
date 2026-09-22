@@ -16,7 +16,7 @@
             <p>Modify the details for this reported item.</p>
         </div>
 
-        <form asp-action="Edit" method="post">
+        <form id="update-item-form" asp-action="Edit" method="post">
             <!-- Hidden ID so the backend knows which item to update -->
             <input type="hidden" asp-for="Id" />
 
@@ -162,3 +162,40 @@
 
     </main>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const updateForm = document.getElementById('update-item-form');
+            
+            if (updateForm) {
+                updateForm.addEventListener('submit', function (e) {
+                    // Prevent the immediate form submission
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        title: 'Save Changes?',
+                        text: 'Are you sure you want to update this item\'s details?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, save changes',
+                        cancelButtonText: 'Cancel',
+                        
+                        customClass: {
+                            popup: 'swal-glass-popup',
+                            title: 'swal-glass-title',
+                            htmlContainer: 'swal-glass-text',
+                            confirmButton: 'swal-glass-confirm',
+                            cancelButton: 'swal-glass-cancel'
+                        },
+                        buttonsStyling: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            updateForm.submit(); 
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+}
