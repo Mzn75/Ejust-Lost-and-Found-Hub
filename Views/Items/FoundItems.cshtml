@@ -22,7 +22,7 @@
 </button>
 
 <!-- Main Content -->
-<div class="glass-container">
+<div class="glass-container overflow-auto vh-100 pb-5">
 
     <main class="main-content">
 
@@ -388,7 +388,7 @@
                                 string statusColor = item.Status == "Returned" ? "var(--secondary)" : "var(--accent)";
 
                                 // Render the form for updating the status of the item
-                                <form method="post" asp-action="UpdateStatus" asp-controller="Items" id="statusForm-@item.Id" class="status-form" style="max-width: 120px;">
+                                <form method="post" asp-action="UpdateStatus" asp-controller="Items" id="statusForm-@item.Id" class="status-form w-100" style="max-width: 200px;">
 
                                     <!-- Generating Hidden Security Token -->
                                     @Html.AntiForgeryToken()
@@ -396,7 +396,7 @@
                                     <input type="hidden" name="id" value="@item.Id" />
 
                                     <!-- Auto-Submitting Select -->
-                                    <select name="newStatus" class="native-status-select" style="color: @statusColor;" onchange="this.form.submit()">
+                                    <select name="newStatus" class="native-status-select form-select w-100 fw-bold" style="color: @statusColor;" onchange="this.form.submit()">
                                         @if (item.Status == "Returned")
                                         {
                                             <option value="Active">Active</option>
@@ -412,7 +412,7 @@
                             }
 
                             <!-- Display when the item was reported -->
-                            <span class="card-badge badge-found badge-static">
+                            <span class="date-pill">
                                 Reported On: @localTime.ToString("MMM dd yyyy 'At' hh:mm tt")
                             </span>
                         </div>

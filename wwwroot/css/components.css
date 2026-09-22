@@ -381,6 +381,27 @@ select.search-input {
         background: linear-gradient(270deg, var(--primary) 0%, var(--secondary) 100%);
     }
 
+.date-pill {
+    background: linear-gradient(270deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+    width: 100%;
+    display: block;
+}
+
+/* On tablets and desktops, it shrinks next to the dropdown */
+@media (min-width: 768px) {
+    .date-pill {
+        width: auto;
+        display: inline-block;
+    }
+}
+
 .card-content {
     padding: 1.5rem;
 }
