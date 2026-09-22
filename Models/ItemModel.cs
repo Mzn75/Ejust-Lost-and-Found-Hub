@@ -12,6 +12,7 @@ namespace EjustLostAndFoundHub.Models
         [Key]
         public int Id { get; set; }
         public Guid PublicId { get; set; } = Guid.NewGuid();
+        public string? UserId { get; set; }
         [Required]
         public string? Category { get; set; }
         public DateTime DateReported { get; set; }

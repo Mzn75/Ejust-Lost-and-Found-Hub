@@ -3,6 +3,7 @@ using EjustLostAndFoundHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,13 +22,14 @@ namespace EjustLostAndFoundHub.Controllers
         private readonly IDataProtector _protector;
 
         private readonly IWebHostEnvironment _env;
+        private readonly UserManager<IdentityUser> _userManager;
 
         // Constructor to initialize the controller with the database context and data protection provider
-        public ItemsController(ApplicationDbContext context, IDataProtectionProvider provider, IWebHostEnvironment env)
+        public ItemsController(ApplicationDbContext context, IWebHostEnvironment env, UserManager<IdentityUser> userManager)
         {
             _context = context;
-            _protector = provider.CreateProtector("ReportedItemsCookieLock");
             _env = env;
+            _userManager = userManager;
         }
 
         // Get found items from the database, filter by category, and display them in the view
@@ -35,11 +37,10 @@ namespace EjustLostAndFoundHub.Controllers
         [Authorize]
         public async Task<IActionResult> FoundItems(string filter = "recent")
         {
-            // 1. Setup Ownership Cookies
-            var idList = GetDecryptedCookieIds();
-                // Pass the list of IDs to the view for ownership checks
-                ViewBag.MyReportedIds = idList;
-                ViewBag.CurrentFilter = filter;
+            // 1. Get the current logged-in user's ID
+            var currentUserId = _userManager.GetUserId(User);
+
+            ViewBag.CurrentFilter = filter;
 
             // 2. Query ALL Active Items
             var query = _context.Items.Where(i => i.Status == "Active").AsQueryable();
@@ -65,11 +66,12 @@ namespace EjustLostAndFoundHub.Controllers
                 query = query.OrderByDescending(i => i.DateReported);
             }
 
-            // To show 10 recent items ignoring ownership
             ViewBag.RecentItems = await query.Take(10).ToListAsync();
 
-            // To show recent items that the user has reported (ownership)
-            ViewBag.MyItems = await _context.Items.Where(i => idList.Contains(i.Id)).ToListAsync();
+            // 5. Query ownership based on Identity UserId instead of cookies
+            var myItems = await _context.Items.Where(i => i.UserId == currentUserId).ToListAsync();
+            ViewBag.MyItems = myItems;
+            ViewBag.MyReportedIds = myItems.Select(i => i.Id).ToList(); // Pass just the IDs for the view's dropdown logic
 
             return View();
         }
@@ -246,30 +248,14 @@ namespace EjustLostAndFoundHub.Controllers
                 }
             }
 
-            // 5. Save the new item to the database
+            // 5. Save the new item to the database WITH the User ID
             newDbItem.DateReported = DateTime.UtcNow;
+            newDbItem.UserId = _userManager.GetUserId(User); // Link the item to the account
+
             _context.Items.Add(newDbItem);
             await _context.SaveChangesAsync();
 
-            // Setup Browser Cookie
-                // 1. Get existing secure IDs using the helper method
-                List<int> myReportedIds = GetDecryptedCookieIds();
-
-                // 2. Add the new item's integer ID
-                myReportedIds.Add(newDbItem.Id);
-
-                // 3. Serialize to JSON and Encrypt
-                string jsonString = JsonSerializer.Serialize(myReportedIds);
-                string encryptedString = _protector.Protect(jsonString);
-
-                // 4. Save the locked cookie
-                Response.Cookies.Append("MyReportedItems", encryptedString, new CookieOptions
-                {
-                    HttpOnly = true, // Prevents JavaScript from reading the cookie
-                    Secure = true,   // Ensures it only sends over HTTPS
-                    SameSite = SameSiteMode.Strict, // Prevents cross-site request forgery
-                    Expires = DateTimeOffset.UtcNow.AddDays(30) // Keeps it alive for a month
-                });
+            // DELETE ALL OF THE COOKIE SETUP CODE HERE
 
             // 6. Return with a success message
             TempData["SuccessMessage"] = "Item successfully reported! Thank you for helping.";
@@ -281,58 +267,32 @@ namespace EjustLostAndFoundHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(int id, string newStatus)
         {
-            // 1. Strict Whitelist validation
             if (newStatus != "Active" && newStatus != "Returned")
             {
                 TempData["DuplicateMessage"] = "Error: Invalid status requested.";
                 return RedirectToAction("FoundItems");
             }
 
-            // 2. Safe Cookie Parsing
-            List<int> authorizedIdList = GetDecryptedCookieIds();
+            // 1. Find the item first
+            var item = await _context.Items.FindAsync(id);
+            if (item == null) return NotFound();
 
-            // 3. Security Check (IDOR Protection)
-            if (!authorizedIdList.Contains(id))
+            // 2. Security Check: Does this belong to the logged-in user?
+            var currentUserId = _userManager.GetUserId(User);
+            bool isAdmin = User.IsInRole("Admin");
+
+            if (item.UserId != currentUserId && !isAdmin)
             {
                 TempData["DuplicateMessage"] = "Security Alert: You do not have permission to update this item.";
                 return RedirectToAction("FoundItems");
             }
 
-            // 4. Update the item status in the database
-            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
-            if (item != null)
-            {
-                item.Status = newStatus;
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"Item status successfully updated to {newStatus}!";
-            }
+            // 3. Update the item status
+            item.Status = newStatus;
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Item status successfully updated to {newStatus}!";
 
-            // 5. Redirect back to the FoundItems view
             return RedirectToAction("FoundItems");
-        }
-
-        // Helper method to decrypt the cookie and retrieve the list of item IDs
-        private List<int> GetDecryptedCookieIds()
-        {
-            // 1. Retrieve the encrypted cookie from the request
-            var encryptedCookie = Request.Cookies["MyReportedItems"];
-            if (string.IsNullOrEmpty(encryptedCookie))
-            {
-                return new List<int>(); // No cookie found
-            }
-
-            // 2. Decrypt the cookie and deserialize the JSON into a list of integers
-            try
-            {
-                // Attempts to unlock the data
-                var decryptedJson = _protector.Unprotect(encryptedCookie);
-                return JsonSerializer.Deserialize<List<int>>(decryptedJson) ?? new List<int>();
-            }
-            catch (System.Security.Cryptography.CryptographicException)
-            {
-                // If decryption fails, return an empty list to avoid exposing any data
-                return new List<int>();
-            }
         }
 
         // Display the LostItems view
