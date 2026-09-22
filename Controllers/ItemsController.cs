@@ -338,13 +338,57 @@ namespace EjustLostAndFoundHub.Controllers
         // Display the LostItems view
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> LostItems()
+        public async Task<IActionResult> LostItems(string categoryFilter, string dateFilter)
         {
             // 1. Get all items from the database (or apply your search filters here)
-            var items = await _context.Items
+            /*var items = await _context.Items
                 .Where(i => i.Status != "Returned")
                 .OrderByDescending(i => i.DateReported) // Show newest first
                 .ToListAsync();
+            */
+            var itemsQuery = _context.Items
+                .Where(i => i.Status != "Returned");
+
+            // Apply the category filter
+            if (!string.IsNullOrEmpty(categoryFilter) && categoryFilter != "All")
+            {
+                itemsQuery = itemsQuery.Where(i => i.Category == categoryFilter);
+            }
+
+            // Apply the relative date filter
+            if (!string.IsNullOrEmpty(dateFilter) && dateFilter != "All")
+            {
+                var today = DateTime.Today;
+
+                if (dateFilter == "today")
+                {
+                    itemsQuery = itemsQuery.Where(i => i.DateReported.Date == today);
+                }
+                else if (dateFilter == "yesterday")
+                {
+                    var yesterday = today.AddDays(-1);
+                    itemsQuery = itemsQuery.Where(i => i.DateReported.Date == yesterday);
+                }
+                else if (dateFilter == "last_week")
+                {
+                    // Gets everything from the last 7 days
+                    var lastWeek = today.AddDays(-7);
+                    itemsQuery = itemsQuery.Where(i => i.DateReported.Date >= lastWeek);
+                }
+                else if (dateFilter == "last_month")
+                {
+                    // Gets everything from the last 30 days
+                    var lastMonth = today.AddDays(-30);
+                    itemsQuery = itemsQuery.Where(i => i.DateReported.Date >= lastMonth);
+                }
+            }
+
+            var items = await itemsQuery
+                .OrderByDescending(i => i.DateReported)
+                .ToListAsync();
+
+            ViewBag.CurrentCategory = categoryFilter;
+            ViewBag.CurrentDate = dateFilter;
 
             // 2. Pass the list of items into the view
             return View(items);

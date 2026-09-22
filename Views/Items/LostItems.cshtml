@@ -179,6 +179,57 @@
 				</div>
 			</form>
             </div>
+
+            <div class="form-divider"></div>
+            <p class="text-muted">Browse Recently Reported Items</p>            
+
+            <!-- Filter Bar -->
+            <div class="filter-bar-container bg-white p-3 rounded shadow-sm mb-4">
+                <form asp-action="LostItems" method="get" class="d-flex flex-column flex-md-row gap-3 align-items-center justify-content-between m-0">
+        
+                    <div class="d-flex flex-column flex-sm-row gap-3 w-100">
+                        <!-- Category Dropdown -->
+                        <div class="w-100" style="max-width: 250px;">
+                            <select name="categoryFilter" class="form-select bg-light border-0 py-2 text-secondary fw-bold">
+                                <option value="All" selected="@(ViewBag.CurrentCategory == "All" || string.IsNullOrEmpty(ViewBag.CurrentCategory))">All Categories</option>
+                                <option value="id" selected="@(ViewBag.CurrentCategory == "id")">ID Card</option>
+                                <option value="wallet" selected="@(ViewBag.CurrentCategory == "wallet")">Wallet</option>
+                                <option value="device" selected="@(ViewBag.CurrentCategory == "device")">Electronic Device</option>
+                                <option value="jewelry" selected="@(ViewBag.CurrentCategory == "jewelry")">Accessories</option>
+                                <option value="notebook" selected="@(ViewBag.CurrentCategory == "notebook")">Notebook</option>
+                            </select>
+                        </div>
+
+                        <!-- Date Dropdown -->
+                        <div class="w-100" style="max-width: 250px;">
+                            <select name="dateFilter" class="form-select bg-light border-0 py-2 text-secondary fw-bold">
+                                <option value="All" selected="@(ViewBag.CurrentDate == "All" || string.IsNullOrEmpty(ViewBag.CurrentDate))">Any Time</option>
+                                <option value="today" selected="@(ViewBag.CurrentDate == "today")">Today</option>
+                                <option value="yesterday" selected="@(ViewBag.CurrentDate == "yesterday")">Yesterday</option>
+                                <option value="last_week" selected="@(ViewBag.CurrentDate == "last_week")">Last Week</option>
+                                <option value="last_month" selected="@(ViewBag.CurrentDate == "last_month")">Last Month</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn-primary border-0 py-2 px-4 rounded fw-bold text-nowrap">
+                            <i class="fa-solid fa-filter me-2"></i> Filter
+                        </button>
+
+                        <!-- Clear Button -->
+                        @if ((!string.IsNullOrEmpty(ViewBag.CurrentCategory) && ViewBag.CurrentCategory != "All") || (!string.IsNullOrEmpty(ViewBag.CurrentDate) && ViewBag.CurrentDate != "All"))
+                        {
+                            <a href="@Url.Action("LostItems")" class="btn btn-light border py-2 px-3 rounded text-secondary text-nowrap">
+                                Clear
+                            </a>
+                        }
+                    </div>
+
+                </form>
+            </div>
+
             <!-- Found Items Browse -->
             <div class="elements-grid mt-5">
                 @if (Model != null && Model.Any())
@@ -242,6 +293,9 @@
                             </div>
                         </div>
                     }
+                }else
+                {
+                    <p class="mb-0 text-center text-muted">No items have been reported recently.</p>
                 }
 		</div>
 	</main>
