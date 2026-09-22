@@ -340,12 +340,6 @@ namespace EjustLostAndFoundHub.Controllers
         [Authorize]
         public async Task<IActionResult> LostItems(string categoryFilter, string dateFilter)
         {
-            // 1. Get all items from the database (or apply your search filters here)
-            /*var items = await _context.Items
-                .Where(i => i.Status != "Returned")
-                .OrderByDescending(i => i.DateReported) // Show newest first
-                .ToListAsync();
-            */
             var itemsQuery = _context.Items
                 .Where(i => i.Status != "Returned");
 
