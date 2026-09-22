@@ -107,6 +107,9 @@
         transition: all 0.3s ease;
         font-weight: 500;
     }
+    .nav-links button {
+        font-weight: 500;
+    }
 
         .nav-links a:hover,
         .nav-links a.active {
@@ -134,6 +137,7 @@
         align-items: center;
         gap: 12px;
         transition: all 0.3s ease;
+        font-weight: 500;
     }
 
         .nav-links .nav-link-button:hover {

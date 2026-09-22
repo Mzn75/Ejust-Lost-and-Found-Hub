@@ -75,11 +75,12 @@
                 </a>
             </li>
             <li>
-                <!--Will be used later -->
-                <a asp-controller="Account" asp-action="Logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Logout
-                </a>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0 p-0">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="nav-link-button">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
             </li>
             <li>
                 <p class="text-white-50 small" style="font-size: 0.85rem; letter-spacing: 1px;">Developed by <br /> </p>
