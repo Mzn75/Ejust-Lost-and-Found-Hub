@@ -32,7 +32,27 @@
     padding: 2rem 1.5rem;
     box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    overflow-y: auto;
 }
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 3px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--secondary);
+    }
 
 .logo {
     text-align: center;

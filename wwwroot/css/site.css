@@ -17,11 +17,17 @@
     box-sizing: border-box;
 }
 
+p, h1, h2, h3, h4, h5, h6 {
+    overflow:hidden;
+}
+
 body {
     background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
     color: #333;
+    overflow-x: hidden;
+    overflow: hidden;
 }
 
 /* GLOBAL UTILITY CLASSES */

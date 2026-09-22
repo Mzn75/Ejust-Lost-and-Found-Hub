@@ -78,6 +78,39 @@
         .item-actions .status-form {
             order: 2;
         }
+
+    /* 1. Force the grid to a single column */
+    .elements-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* 2. Convert horizontal feed cards into vertical stacked cards */
+    .feed-card-horizontal {
+        flex-direction: column !important;
+        text-align: center;
+        padding: 1.5rem !important;
+    }
+
+    /* 3. Center the thumbnail image */
+    .item-thumbnail {
+        margin: 0 auto 1.5rem auto !important;
+        width: 120px !important;
+        height: 120px !important;
+    }
+
+    /* 4. Stretch the action buttons to fill the screen */
+    .item-actions {
+        width: 100%;
+        padding-left: 0 !important;
+        margin-top: 1.5rem;
+        flex-direction: column;
+    }
+
+        .item-actions .btn-primary,
+        .item-actions form,
+        .item-actions button {
+            width: 100%;
+        }
 }
 
 /* Small Mobile Devices */
