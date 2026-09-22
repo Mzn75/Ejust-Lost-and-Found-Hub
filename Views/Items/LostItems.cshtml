@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<EjustLostAndFoundHub.Models.ItemModel>
+@{
 	ViewData["Title"] = "Search Lost Items";
 }
 
@@ -8,10 +9,8 @@
 </button>
 
 <!-- Main Content -->
-<div class="glass-container">
-
+<div class="glass-container overflow-auto vh-100 pb-5">
 	<main class="main-content">
-
 		<!-- The Header Section -->
         <div class="content-header welcome-header-card bg-white rounded shadow-sm p-5 text-center position-relative mb-4">
             <i class="fa-solid fa-magnifying-glass faded-watermark-icon"></i>
@@ -179,6 +178,52 @@
 
 				</div>
 			</form>
+            </div>
+            <!-- The Marketplace-Style Grid -->
+            <div class="elements-grid mt-5">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <div class="element-card activity-card">
+
+                            <!-- Top Half: The Image -->
+                            <div class="card-header">
+                                @if (!string.IsNullOrEmpty(item.PhotoPath))
+                                {
+                                    <img src="@item.PhotoPath" alt="Found Item" class="card-image" />
+                                }
+                                else
+                                {
+                                    <!-- Fallback if no picture was uploaded -->
+                                    <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light">
+                                        <i class="fa-solid fa-box-open fa-3x text-secondary"></i>
+                                    </div>
+                                }
+
+                                <!-- Floating Badge for Status -->
+                                <span class="card-badge badge-found">@item.Status</span>
+                            </div>
+
+                            <!-- Bottom Half: The Details -->
+                            <div class="card-content">
+                                <h3 class="card-title text-dark mb-2">@item.Category</h3>
+
+                                <div class="card-description">
+                                    <strong>Found at:</strong> @item.LocationFound <br />
+                                    <strong>Date:</strong> @item.DateReported.ToString("MMM dd, yyyy")
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="card-actions mt-3">
+                                    <a href="@Url.Action("Details", "Items", new { id = item.Id })" class="btn-primary w-100">
+                                        Is this yours?
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
 		</div>
 	</main>
 </div>

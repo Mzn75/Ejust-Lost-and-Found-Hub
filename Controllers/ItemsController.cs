@@ -338,9 +338,16 @@ namespace EjustLostAndFoundHub.Controllers
         // Display the LostItems view
         [HttpGet]
         [Authorize]
-        public IActionResult LostItems()
+        public async Task<IActionResult> LostItems()
         {
-            return View();
+            // 1. Get all items from the database (or apply your search filters here)
+            var items = await _context.Items
+                .Where(i => i.Status != "Returned")
+                .OrderByDescending(i => i.DateReported) // Show newest first
+                .ToListAsync();
+
+            // 2. Pass the list of items into the view
+            return View(items);
         }
 
         // Handle the AJAX request to reveal contact information with rate limiting
