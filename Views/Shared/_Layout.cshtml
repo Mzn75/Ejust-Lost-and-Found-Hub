@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="~/css/responsive.css" asp-append-version="true" />
 </head>
 
-<body class="@(ViewData["LockScroll"] != null && (bool)ViewData["LockScroll"] ? "lock-scroll" : "")" style="overflow:hidden">
+<body class="@(ViewData["LockScroll"] != null && (bool)ViewData["LockScroll"] ? "lock-scroll" : "")">
 
     <!-- Sidebar Navigation -->
     <nav class="sidebar">
@@ -76,19 +76,19 @@
             </li>
             <li>
                 <!--Will be used later -->
-                <a asp-controller="Items" asp-action="Logout">
+                <a asp-controller="Account" asp-action="Logout">
                     <i class="fas fa-sign-out-alt"></i>
                     Logout
                 </a>
             </li>
+            <li>
+                <p class="text-white-50 small" style="font-size: 0.85rem; letter-spacing: 1px;">Developed by <br /> </p>
+                <span class="fw-bold text-white">
+                    <a class="dev-by" href="https://mazen-thobian.tech" target="_blank"> <i class="fa-solid fa-link"></i> Mazen Thobian
+                    </a>
+                </span>
+            </li>
         </ul>
-
-        <div class="position-absolute bottom-0 start-0 w-100 pb-4 text-center">
-            <div class="text-white-50 small" style="font-size: 0.85rem; letter-spacing: 1px;">
-                Developed by <br /> <span class="fw-bold text-white"><a class="dev-by" href="https://mazen-thobian.tech" target="_blank"> <i class="fa-solid fa-link"></i> Mazen Thobian</a></span>
-            </div>
-        </div>
-
     </nav>
 
     <div>
