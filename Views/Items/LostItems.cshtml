@@ -179,7 +179,7 @@
 				</div>
 			</form>
             </div>
-            <!-- The Marketplace-Style Grid -->
+            <!-- Found Items Browse -->
             <div class="elements-grid mt-5">
                 @if (Model != null && Model.Any())
                 {
@@ -207,7 +207,29 @@
 
                             <!-- Bottom Half: The Details -->
                             <div class="card-content">
-                                <h3 class="card-title text-dark mb-2">@item.Category</h3>
+                                <h3 class="card-title text-dark mb-2">
+                                    @switch (item)
+                                {
+                                    case EjustLostAndFoundHub.Models.IdItem idCard:
+                                        @($"ID: {idCard.IdNumber}")
+                                        break;
+                                    case EjustLostAndFoundHub.Models.DeviceItem device:
+                                        @($"{device.DeviceBrand} {device.DeviceModel}")
+                                        break;
+                                    case EjustLostAndFoundHub.Models.WalletItem wallet:
+                                        @($"{wallet.WalletColor} Wallet")
+                                        break;
+                                    case EjustLostAndFoundHub.Models.JewelryItem jewelry:
+                                        @($"{jewelry.JewelryMaterial} {jewelry.JewelryType}")
+                                        break;
+                                    case EjustLostAndFoundHub.Models.NotebookItem notebook:
+                                        @($"{notebook.NotebookColor} Notebook")
+                                        break;
+                                    default:
+                                        @:Unknown Item
+                                        break;
+                                }
+                                </h3>
 
                                 <div class="card-description">
                                     <strong>Found at:</strong> @item.LocationFound <br />
@@ -216,7 +238,7 @@
 
                                 <!-- Action Buttons -->
                                 <div class="card-actions mt-3">
-                                    <a href="@Url.Action("Details", "Items", new { id = item.Id })" class="btn-primary w-100">
+                                    <a href="@Url.Action("Details", "Items",new { id = item.PublicId })" class="btn-primary w-100">
                                         Is this yours?
                                     </a>
                                 </div>
