@@ -61,10 +61,13 @@
 
                             <!-- Dynamic Input Field -->
                             <div class="form-group mb-4">
-                                <label asp-for="NationalId" id="dynamicLabel" class="fw-bold mb-2 text-dark">National ID</label>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label asp-for="NationalId" id="dynamicLabel" class="fw-bold m-0 text-dark">National ID</label>
+                                    <small id="charCounter" class="text-secondary fw-bold">0/14</small>
+                                </div>
 
                                 <input asp-for="NationalId" class="form-control form-control-lg bg-light border-0"
-                                       placeholder="e.g., 30012345678901"
+                                       placeholder="Enter your National ID"
                                        maxlength="14"
                                        type="number" />
 
@@ -83,7 +86,6 @@
                 </div>
 
             </div>
-
         </main>
     </div>
 </body>
@@ -92,24 +94,48 @@
         const radios = document.querySelectorAll('input[name="IdType"]');
         const inputField = document.getElementById("NationalId");
         const dynamicLabel = document.getElementById("dynamicLabel");
+        const charCounter = document.getElementById("charCounter");
 
+        // Helper function to update the counter text
+        function updateCounter() {
+            const currentLength = inputField.value.length;
+            const maxLength = inputField.maxLength;
+            charCounter.textContent = `${currentLength}/${maxLength}`;
+        }
+
+        // Listen for user typing
+        inputField.addEventListener("input", function() {
+            // HTML type="number" ignores maxlength, so we enforce it via JavaScript
+            if (this.value.length > this.maxLength) {
+                this.value = this.value.slice(0, this.maxLength);
+            }
+            updateCounter();
+        });
+
+        // Listen for radio button toggles
         radios.forEach(radio => {
             radio.addEventListener("change", function() {
                 inputField.value = "";
 
                 if (this.value === "nationalId") {
                     dynamicLabel.textContent = "National ID";
-                    inputField.placeholder = "e.g., 30012345678901";
+                    inputField.placeholder = "Enter your National ID";
                     inputField.maxLength = 14;
                     inputField.type = "number";
                 } else {
                     dynamicLabel.textContent = "Passport Number";
-                    inputField.placeholder = "e.g., A12345678";
+                    inputField.placeholder = "Enter your Passport Number";
                     inputField.maxLength = 9;
                     inputField.type = "text";
                 }
+                
+                // Reset the counter display when switching types
+                updateCounter(); 
             });
         });
+        
+        // Initialize the counter display on page load
+        updateCounter();
     });
 </script>
 </html>

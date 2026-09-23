@@ -799,11 +799,11 @@ select.search-input {
 
 /* 1. Default state for the page numbers */
 .pagination .page-link {
-    color: var(--primary, #27ae60); /* Green text by default */
+    color: var(--primary, #27ae60);
     background-color: #fff;
     border: 1px solid #e9ecef;
-    margin: 0 3px; /* Adds a tiny gap between buttons */
-    border-radius: 8px; /* Matches your element-card corners */
+    margin: 0 3px;
+    border-radius: 8px;
     transition: all 0.3s ease;
     font-weight: 600;
 }
