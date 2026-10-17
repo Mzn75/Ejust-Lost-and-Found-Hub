@@ -26,6 +26,7 @@ body {
         height: 100%;
         background-image: url('/img/doodle-bg.png');
         background-repeat: repeat;
+        background-attachment: fixed;
         opacity: 0.75;
         pointer-events: none;
         z-index: -1;
@@ -110,4 +111,9 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
     -moz-appearance: textfield;
+}
+
+.dev-by {
+    color: var(--accent);
+    text-decoration: none;
 }
