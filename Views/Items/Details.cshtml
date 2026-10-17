@@ -9,7 +9,7 @@
 }
 
 <!-- Main Content -->
-<div class="glass-container details-wrapper min-vh-100 d-flex flex-column justify-content-center align-items-center py-5">
+<div class="glass-container details-wrapper d-flex flex-column justify-content-center align-items-center overflow-auto vh-100">
     <main class="main-content details-main">
 
         <!-- Display the Item Details -->
@@ -43,7 +43,6 @@
                         <i class="fa-solid @iconClass fa-2x mb-3" style="color: var(--secondary);"></i>
                         <p style="color: var(--secondary);">No Photo Provided</p>
                     </div>
-              
                 }
 
                 <!-- Navigate Back to Search Lost -->
@@ -51,16 +50,15 @@
                     <i class="fa-solid fa-arrow-left me-2"></i> Back
                 </a>
 
+                <!-- Display Item's ID -->
+                <span class="card-badge badge-solid-primary mb-2 d-inline-block">Found Item ID: @Model.Id</span>
+
             </div>
 
             <div class="details-body">
 
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-4 mb-4">
                     <div>
-
-                        <!-- Display Item's ID -->
-                        <span class="card-badge badge-solid-primary mb-2 d-inline-block">Found Item #@Model.Id</span>
-
                         <!-- Display Item Title from its data -->
                         <h2 class="details-title m-0">
 
